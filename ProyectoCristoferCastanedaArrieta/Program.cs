@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using ProyectoCristoferCastanedaArrieta.Datos;
+using ProyectoCristoferCastanedaArrieta.Datos.Repositorio;
+using ProyectoCristoferCastanedaArrieta.Datos.Repositorio.IRepositorio;
 using ProyectoCristoferCastanedaArrieta.Utilidades;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,9 @@ builder.Services.AddSession(Options =>
     Options.Cookie.HttpOnly= true;
     Options.Cookie.IsEssential= true;
 });
+
+builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
+builder.Services.AddScoped<ITipoAplicacionRepositorio, TipoAplicacionRepositorio>();
 
 var app = builder.Build();
 

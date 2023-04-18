@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoCristoferCastanedaArrieta.Datos;
+using ProyectoCristoferCastanedaArrieta.Datos.Repositorio.IRepositorio;
 using ProyectoCristoferCastanedaArrieta.Models;
 using ProyectoCristoferCastanedaArrieta.Utilidades;
 
@@ -9,15 +10,15 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
     [Authorize(Roles = WC.AdminRole)]
     public class CategoriaController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public CategoriaController(ApplicationDbContext db)
+        private readonly ICategoriaRepositorio _catRepo;
+        public CategoriaController(ICategoriaRepositorio catRepo)
         {
-            _db = db;
+            _catRepo = catRepo;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Categoria> lista = _db.Categoria;
+            IEnumerable<Categoria> lista = _catRepo.ObtenerTodos();
             return View(lista);
         }
 
@@ -34,8 +35,8 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
         {
             if(ModelState.IsValid)
             {
-                _db.Categoria.Add(categoria);
-                _db.SaveChanges();
+                _catRepo.Agregar(categoria);
+                _catRepo.Grabar();
                 return RedirectToAction(nameof(Index));
             }            
             return View(categoria);
@@ -48,7 +49,7 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.Categoria.Find(Id);
+            var obj = _catRepo.Obtener(Id.GetValueOrDefault());
             if (obj == null) 
             {
                 return NotFound(obj);
@@ -64,8 +65,8 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Categoria.Update(categoria);
-                _db.SaveChanges();
+                _catRepo.Actualizar(categoria);
+                _catRepo.Grabar();
                 return RedirectToAction(nameof(Index));
             }
             return View(categoria);
@@ -77,7 +78,7 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.Categoria.Find(Id);
+            var obj = _catRepo.Obtener(Id.GetValueOrDefault());
             if (obj == null)
             {
                 return NotFound(obj);
@@ -95,8 +96,8 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
             {
                 return NotFound();
             }
-            _db.Categoria.Remove(categoria);
-            _db.SaveChanges();
+            _catRepo.Remover(categoria);
+            _catRepo.Grabar();
             return RedirectToAction(nameof(Index));
             
         }

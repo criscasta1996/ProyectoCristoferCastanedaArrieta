@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoCristoferCastanedaArrieta.Datos;
+using ProyectoCristoferCastanedaArrieta.Datos.Repositorio.IRepositorio;
 using ProyectoCristoferCastanedaArrieta.Models;
 using ProyectoCristoferCastanedaArrieta.Utilidades;
 
@@ -9,15 +10,15 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
     [Authorize(Roles = WC.AdminRole)]
     public class TipoAplicacionController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public TipoAplicacionController(ApplicationDbContext db)
+        private readonly ITipoAplicacionRepositorio _tipoRepo;
+        public TipoAplicacionController(ITipoAplicacionRepositorio tipoRepo)
         {
-            _db = db;
+            _tipoRepo = tipoRepo;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<TipoAplicacion> lista = _db.TipoAplicacion;
+            IEnumerable<TipoAplicacion> lista = _tipoRepo.ObtenerTodos();
             return View(lista);
         }
 
@@ -34,8 +35,8 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.TipoAplicacion.Add(tipoAplicacion);
-                _db.SaveChanges();
+                _tipoRepo.Agregar(tipoAplicacion);
+                _tipoRepo.Grabar();
                 return RedirectToAction(nameof(Index));
             }
             return View(tipoAplicacion);
@@ -48,7 +49,7 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.TipoAplicacion.Find(Id);
+            var obj = _tipoRepo.Obtener(Id.GetValueOrDefault());
             if (obj == null)
             {
                 return NotFound(obj);
@@ -64,8 +65,8 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.TipoAplicacion.Update(tipoAplicacion);
-                _db.SaveChanges();
+                _tipoRepo.Actualizar(tipoAplicacion);
+                _tipoRepo.Grabar();
                 return RedirectToAction(nameof(Index));
             }
             return View(tipoAplicacion);
@@ -77,7 +78,7 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.TipoAplicacion.Find(Id);
+            var obj = _tipoRepo.Obtener(Id.GetValueOrDefault());
             if (obj == null)
             {
                 return NotFound(obj);
@@ -95,8 +96,8 @@ namespace ProyectoCristoferCastanedaArrieta.Controllers
             {
                 return NotFound();
             }
-            _db.TipoAplicacion.Remove(tipoAplicacion);
-            _db.SaveChanges();
+            _tipoRepo.Remover(tipoAplicacion);
+            _tipoRepo.Grabar();
             return RedirectToAction(nameof(Index));
 
         }
